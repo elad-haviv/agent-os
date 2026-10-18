@@ -1,0 +1,151 @@
+// Agent OS — data model (spec: מודל נתונים, 7 entities + auth/audit)
+// Dev/verify: SQLite. For Coolify deploy use prisma/schema.postgres.prisma (identical, provider postgres).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("owner") // owner | admin | viewer
+  createdAt    DateTime @default(now())
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  channel   String   @default("app") // gateway | app | cron
+  project   Project? @relation(fields: [projectId, ], references: [id])
+  projectId String?
+  createdAt DateTime @default(now())
+}
+
+model ServiceToken {
+  id        String    @id @default(cuid())
+  name      String
+  tokenHash String    @unique
+  scopes    String    @default("read,write") // csv: read,write,approve
+  revoked   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  lastUsed  DateTime?
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  workSource  String   @default("local") // github | gdrive | local
+  workSourceRef String? // repo / folder id / path
+  subdomain   String?
+  coolifyApp  String?
+  bankName    String? // optional Hindsight project bank
+  status      String   @default("active")
+  autonomy    String   @default("standard") // levels: supervised | standard | autonomous
+  budgetUsd   Float    @default(50)
+  createdAt   DateTime @default(now())
+  tasks       Task[]
+  sessions    Session[]
+}
+
+model Task {
+  id            String    @id @default(cuid())
+  title         String
+  projectId     String?
+  project       Project?  @relation(fields: [projectId], references: [id])
+  origin        String    @default("gateway") // gateway | app | cron
+  requiredOutcome Json?   // list of criteria, agent-drafted, user-approved
+  understanding String?   // agent's restatement awaiting approval
+  understandingApproved Boolean @default(false)
+  priority      Int       @default(2) // 1 high, 2 med, 3 low
+  status        String    @default("new")
+  workflowId    String?
+  tags          String    @default("") // csv
+  blockedReason String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  runs          Run[]
+  taskType      String    @default("general")
+  golden        Boolean   @default(false) // דוגמת זהב
+}
+
+model Run {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  parentRunId String? // subagent runs point at the main run
+  agentKind String   @default("main") // main | sub
+  agentName String   @default("hermes")
+  model     String   @default("z-ai/glm-5.3-flash")
+  workflowStep String?
+  status    String   @default("running") // running | done | failed
+  log       String   @default("")
+  steps     Int      @default(0)
+  artifacts String   @default("") // csv of Garage links
+  inputTokens  Int   @default(0)
+  outputTokens Int   @default(0)
+  costUsd   Float    @default(0)
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  lessonsApplied String @default("") // csv of lesson ids pulled before run
+  feedback  Feedback?
+}
+
+model Feedback {
+  id             String   @id @default(cuid())
+  runId          String   @unique
+  run            Run      @relation(fields: [runId], references: [id])
+  understandingLight String @default("none") // green | yellow | red | none
+  executionLight     String @default("none")
+  outcomeAchieved    String @default("pending") // yes | partial | no | pending
+  mistakes        String   @default("")
+  whatShouldHave  String   @default("")
+  tags            String   @default("")
+  needsFix        Boolean  @default(false)
+  processed       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  lessons         Lesson[]
+}
+
+model Lesson {
+  id          String    @id @default(cuid())
+  rule        String
+  scope       String    @default("global") // global | project | task-type
+  scopeRef    String?   // project slug or task type
+  sourceFeedbackId String?
+  sourceFeedback Feedback? @relation(fields: [sourceFeedbackId], references: [id])
+  status      String    @default("proposed") // proposed | approved | retired
+  conflictWith String?   // lesson id it contradicts
+  appliedCount Int      @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Workflow {
+  id        String   @id @default(cuid())
+  name      String
+  scope     String   @default("global")
+  scopeRef  String?
+  graphJson String
+  version   Int      @default(1)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String   // user email or agent:<token-name>
+  channel   String   // app | mcp | gateway | cron
+  action    String
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,38 @@
+# Agent OS — Coolify deploy stack (one project per app, per user preference)
+# Routing via Traefik labels INSIDE the compose (docker_compose_domains is rejected on create).
+# The `coolify` external network is mandatory — without it Traefik returns 503 No Host.
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=file:/data/agentos.db
+      - APP_URL=${APP_URL:-https://os.haviv.pro}
+      - AGENT_TOKEN=${AGENT_TOKEN}
+      - BUDGET_MONTHLY_USD=50
+      - HINDSIGHT_URL=${HINDSIGHT_URL}
+      - HINDSIGHT_TOKEN=${HINDSIGHT_TOKEN}
+      - GARAGE_S3_URL=${GARAGE_S3_URL}
+    volumes:
+      - agentos-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/auth"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.agentos.rule=Host(`os.haviv.pro`)"
+      - "traefik.http.routers.agentos.entrypoints=https"
+      - "traefik.http.routers.agentos.tls.certresolver=letsencrypt"
+      - "traefik.http.services.agentos.loadbalancer.server.port=3000"
+
+networks:
+  default:
+    external: true
+    name: coolify
+
+volumes:
+  agentos-data:
