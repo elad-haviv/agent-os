@@ -14,7 +14,12 @@ export function jsonError(msg: string, status = 400) {
 export async function requireAuth(req: Request) {
   const bearer = req.headers.get("authorization")?.replace(/^Bearer /i, "") ?? null;
   const token = bearer && bearer !== "undefined" ? getServiceToken(bearer) : null;
-  if (token) return { actor: `agent:${token.name}`, channel: "mcp", scopes: token.scopes.split(",") };
+  if (token) {
+    const scopes = token.scopes.split(",");
+    // approve scope = user-equivalent credential (used for historical imports)
+    const channel = scopes.includes("approve") ? "app" : "mcp";
+    return { actor: `agent:${token.name}`, channel, scopes };
+  }
   const user = await getSessionUser();
   if (user) return { actor: user.email, channel: "app", scopes: ["read", "write", "approve"] };
   return null;
