@@ -95,7 +95,6 @@ export function sqlArgs(args: unknown[]): SqlArg[] {
   return args.map(a => (a === undefined ? null : (a as SqlArg)));
 }
 
-// ONE-TIME backfill enablement (active deploy only): grant the imported-history
-// token the approve scope so historical feedback/lessons can be written via API.
-// Removed in the follow-up commit which clamps scopes back to read,write.
-db().prepare(`UPDATE service_tokens SET scopes = 'read,write,approve' WHERE scopes = 'read,write' AND revoked = 0`).run();
+// Backfill finished: clamp imported-history token back to read,write so the
+// approve scope (user-equivalent) is held only by the human session again.
+db().prepare(`UPDATE service_tokens SET scopes = 'read,write' WHERE scopes = 'read,write,approve'`).run();
