@@ -11,7 +11,6 @@ export default function Dashboard() {
   const { data: tasks, reload } = useApi<{ tasks: Task[] }>("/api/tasks");
   const { data: projects } = useApi<{ projects: Project[] }>("/api/projects");
   const { data: stats } = useApi<Record<string, any>>("/api/stats");
-  const [unified, setUnified] = useState(false);
   const [title, setTitle] = useState("");
   const [projectId, setProjectId] = useState("");
   const [showMap, setShowMap] = useState(false);
@@ -70,21 +69,11 @@ export default function Dashboard() {
       </div>
 
       <h2>משימות</h2>
-      <label className="muted" style={{ display: "block", marginBottom: 10 }}>
-        <input type="checkbox" checked={unified} onChange={e => setUnified(e.target.checked)} /> לוח מאוחד לכל הפרויקטים
-      </label>
 
       {!tasks ? (
         <div className="grid cols4">{[0, 1, 2, 3].map(i => <div className="skeleton" key={i} />)}</div>
-      ) : unified ? (
-        Object.entries(groupByProject(all)).map(([name, list]) => (
-          <div key={name}>
-            <h2 style={{ margin: "14px 0 6px" }}>{name}</h2>
-            <TaskBoard tasks={list as Task[]} />
-          </div>
-        ))
       ) : (
-        <TaskBoard tasks={all} />
+        <TaskBoard tasks={all} projects={projects?.projects ?? []} />
       )}
 
       {/* מפת Pelago — פריט משני, מוסתר ברירת מחדל */}
@@ -99,8 +88,3 @@ export default function Dashboard() {
   );
 }
 
-function groupByProject(tasks: Task[]) {
-  const map: Record<string, Task[]> = {};
-  for (const t of tasks) (map[t.project_name ?? "כללי"] ??= []).push(t);
-  return map;
-}

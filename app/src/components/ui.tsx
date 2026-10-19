@@ -31,11 +31,12 @@ export function age(ts?: string | null) {
   return days <= 0 ? "היום" : `${days} ימים`;
 }
 
-export function SearchSelect({ options, value, onChange, placeholder = "בחר…" }: {
+export function SearchSelect({ options, value, onChange, placeholder = "בחר…", clearLabel }: {
   options: { value: string; label: string }[];
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
+  clearLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -50,7 +51,7 @@ export function SearchSelect({ options, value, onChange, placeholder = "בחר�
         <div className="search-select-panel">
           <input autoFocus placeholder="הקלד לסינון…" value={query} onChange={e => setQuery(e.target.value)} />
           <div className="search-select-list">
-            <div className={`search-select-opt ${!value ? "selected" : ""}`} onMouseDown={() => { onChange(""); setOpen(false); }}>כללי (ללא פרויקט)</div>
+            {clearLabel && <div className={`search-select-opt ${!value ? "selected" : ""}`} onMouseDown={() => { onChange(""); setOpen(false); }}>{clearLabel}</div>}
             {filtered.map(o => (
               <div key={o.value} className={`search-select-opt ${o.value === value ? "selected" : ""}`}
                 onMouseDown={() => { onChange(o.value); setOpen(false); }}>{o.label}</div>

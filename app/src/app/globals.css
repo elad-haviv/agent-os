@@ -69,9 +69,10 @@ button.lg-sel { outline: 2px solid var(--text); }
 .light.none { background: var(--border); }
 
 /* Kanban */
-.kanban { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
-.kanban .col { min-width: 240px; flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-.kanban .col h3 { font-size: 15px; margin: 0 0 10px; color: var(--muted); }
+.kanban { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
+.kanban .col { min-width: 240px; flex: 1 0 240px; align-self: flex-start; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; max-height: 70vh; }
+.kanban .col h3 { font-size: 15px; margin: 0 0 10px; color: var(--muted); position: sticky; top: -12px; background: var(--panel); z-index: 1; margin-inline: -12px; padding: 0 12px 8px; }
+.kanban .col .col-body { overflow-y: auto; min-height: 0; }
 .tcard { background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; font-size: 15px; }
 .tcard .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
 .chip { font-size: 13px; padding: 3px 10px; border-radius: 99px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); }
