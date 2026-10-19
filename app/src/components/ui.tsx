@@ -31,6 +31,38 @@ export function age(ts?: string | null) {
   return days <= 0 ? "היום" : `${days} ימים`;
 }
 
+export function SearchSelect({ options, value, onChange, placeholder = "בחר…" }: {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const sel = options.find(o => o.value === value);
+  const filtered = options.filter(o => o.label.toLowerCase().includes(query.toLowerCase()));
+  return (
+    <div className="search-select" tabIndex={0} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node)) { setOpen(false); setQuery(""); } }}>
+      <button type="button" className="search-select-btn" onClick={() => { setOpen(v => !v); setQuery(""); }}>
+        {sel ? sel.label : <span className="muted">{placeholder}</span>} <span className="caret">▾</span>
+      </button>
+      {open && (
+        <div className="search-select-panel">
+          <input autoFocus placeholder="הקלד לסינון…" value={query} onChange={e => setQuery(e.target.value)} />
+          <div className="search-select-list">
+            <div className={`search-select-opt ${!value ? "selected" : ""}`} onMouseDown={() => { onChange(""); setOpen(false); }}>כללי (ללא פרויקט)</div>
+            {filtered.map(o => (
+              <div key={o.value} className={`search-select-opt ${o.value === value ? "selected" : ""}`}
+                onMouseDown={() => { onChange(o.value); setOpen(false); }}>{o.label}</div>
+            ))}
+            {!filtered.length && <div className="muted" style={{ padding: 8, fontSize: 14 }}>אין התאמות</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function useApi<T>(url: string | null): { data: T | null; reload: () => void } {
   const [data, setData] = useState<T | null>(null);
   const [tick, setTick] = useState(0);
