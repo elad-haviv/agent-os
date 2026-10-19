@@ -17,7 +17,6 @@ function openDb(): DatabaseSync {
   g.agentosDb = db;
   return db;
 }
-
 function migrate(db: DatabaseSync) {
   db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -95,7 +94,4 @@ export function sqlArgs(args: unknown[]): SqlArg[] {
   return args.map(a => (a === undefined ? null : (a as SqlArg)));
 }
 
-// ONE-TIME history-import enablement: grant approve scope for the session-history
-// import, then removed in the follow-up commit (see git history).
-db().prepare(`UPDATE service_tokens SET scopes = 'read,write,approve' WHERE scopes = 'read,write' AND revoked = 0`).run();
 
