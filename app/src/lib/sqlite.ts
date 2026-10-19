@@ -95,6 +95,3 @@ export function sqlArgs(args: unknown[]): SqlArg[] {
   return args.map(a => (a === undefined ? null : (a as SqlArg)));
 }
 
-// ONE-TIME password reset for the owner (he lost the bootstrap credentials).
-// Deploy once, user signs in and rotates it in Settings, then this is removed.
-db().prepare(`UPDATE users SET password_hash = '$2b$10$Stc3jiSSNYM1c01A5k1.eefC8e7O7vppWFsmx4iXMosFD4mvkhxxy' WHERE role = 'owner'`).run();
