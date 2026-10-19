@@ -19,7 +19,10 @@ export function Nav() {
   const path = usePathname();
   const [mapOn, setMapOn] = useState(false);
   useEffect(() => {
-    if (localStorage.getItem("agentos-map") === "1") setMapOn(true);
+    if (localStorage.getItem("agentos-map") === "1") {
+      setMapOn(true);
+      document.body.dataset.map = "on";
+    }
   }, []);
   const toggleMap = () => {
     setMapOn(v => {
