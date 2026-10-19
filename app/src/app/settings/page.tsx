@@ -56,7 +56,8 @@ export default function Settings() {
         <div className="card">
           <b>משתמש</b>
           <div className="muted" style={{ margin: "6px 0" }}>{u.user.name} · {u.user.email} · {u.user.role}</div>
-          <button className="ghost" onClick={async () => { await api("/api/auth", "DELETE"); reload(); }}>התנתק</button>
+          <ChangePassword />
+          <button className="ghost" onClick={async () => { await api("/api/auth", "DELETE"); location.href = "/login"; }}>התנתק</button>
         </div>
         <div className="card">
           <b>מודלים ותקציב</b>
@@ -76,5 +77,24 @@ export default function Settings() {
         </div>
       </div>
     </>
+  );
+}
+
+function ChangePassword() {
+  const [pw, setPw] = useState("");
+  const [msg, setMsg] = useState("");
+  return (
+    <div style={{ margin: "8px 0" }}>
+      <form className="inline" onSubmit={async e => {
+        e.preventDefault(); setMsg("");
+        const r = await fetch("/api/auth/password", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ password: pw }) });
+        setMsg(r.ok ? "הסיסמה עודכנה ✓" : "נכשל");
+        if (r.ok) setPw("");
+      }}>
+        <input placeholder="סיסמה חדשה" type="password" value={pw} onChange={e => setPw(e.target.value)} style={{ width: 180 }} />
+        <button className="ghost">עדכן סיסמה</button>
+        {msg && <span className="muted">{msg}</span>}
+      </form>
+    </div>
   );
 }

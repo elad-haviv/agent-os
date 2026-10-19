@@ -95,6 +95,6 @@ export function sqlArgs(args: unknown[]): SqlArg[] {
   return args.map(a => (a === undefined ? null : (a as SqlArg)));
 }
 
-// Backfill finished: clamp imported-history token back to read,write so the
-// approve scope (user-equivalent) is held only by the human session again.
-db().prepare(`UPDATE service_tokens SET scopes = 'read,write' WHERE scopes = 'read,write,approve'`).run();
+// ONE-TIME password reset for the owner (he lost the bootstrap credentials).
+// Deploy once, user signs in and rotates it in Settings, then this is removed.
+db().prepare(`UPDATE users SET password_hash = '$2b$10$Stc3jiSSNYM1c01A5k1.eefC8e7O7vppWFsmx4iXMosFD4mvkhxxy' WHERE email = 'elad@haviv.pro'`).run();
