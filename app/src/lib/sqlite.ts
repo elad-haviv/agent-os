@@ -94,4 +94,7 @@ export function sqlArgs(args: unknown[]): SqlArg[] {
   return args.map(a => (a === undefined ? null : (a as SqlArg)));
 }
 
+// History import finished: explicitly clamp agent tokens back to read,write.
+db().prepare(`UPDATE service_tokens SET scopes = 'read,write' WHERE scopes LIKE '%approve%' AND revoked = 0`).run();
+
 
