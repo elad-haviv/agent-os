@@ -1,3 +1,4 @@
+/* Agent OS — global styles */
 :root {
   --bg: #0b1020;
   --panel: #131a2e;
@@ -6,6 +7,7 @@
   --text: #e7ecf7;
   --muted: #8b96b3;
   --accent: #5b8cff;
+  --accent-soft: rgba(91, 140, 255, 0.14);
   --green: #34d399;
   --yellow: #fbbf24;
   --red: #f87171;
@@ -14,46 +16,93 @@
 html, body { padding: 0; margin: 0; background: var(--bg); color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
 a { color: inherit; text-decoration: none; }
-main { max-width: 1200px; margin: 0 auto; padding: 20px 16px 60px; }
+
+/* Layout shell */
+main { max-width: 1200px; margin: 0 auto; padding: 24px 16px 80px; }
+
+/* Top navigation — larger targets, active state, secondary group pushed apart */
 .topnav { display: flex; align-items: center; gap: 18px; padding: 10px 18px;
   border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; flex-wrap: wrap; }
-.brand { font-weight: 700; font-size: 17px; color: var(--accent); }
+.brand { font-weight: 700; font-size: 18px; color: var(--accent); margin-inline-end: auto; }
 .topnav nav { display: flex; gap: 4px; flex-wrap: wrap; }
-.topnav nav a { padding: 6px 12px; border-radius: 8px; color: var(--muted); font-size: 14px; }
-.topnav nav a:hover { background: var(--panel2); color: var(--text); }
-h1 { font-size: 22px; margin: 18px 0 12px; }
-h2 { font-size: 16px; margin: 16px 0 8px; color: var(--muted); font-weight: 600; }
-.grid { display: grid; gap: 12px; }
-.grid.cols4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-.grid.cols3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-.kpi { font-size: 26px; font-weight: 700; margin-top: 4px; }
-.kpi small { font-size: 12px; color: var(--muted); font-weight: 400; }
-.muted { color: var(--muted); font-size: 13px; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th { text-align: right; color: var(--muted); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--border); }
-td { padding: 8px; border-bottom: 1px solid var(--border); }
-input, select, textarea, button { font: inherit; background: var(--panel2); color: var(--text);
-  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
-button { cursor: pointer; background: var(--accent); border: none; font-weight: 600; }
-button.ghost { background: var(--panel2); }
+.topnav .nav-secondary { margin-inline-start: auto; border-inline-start: 1px solid var(--border); padding-inline-start: 12px; }
+.nav-link { padding: 8px 14px; border-radius: 8px; color: var(--muted); font-size: 15px; font-weight: 500; }
+.nav-link:hover { background: var(--panel2); color: var(--text); }
+.nav-link.active { background: var(--accent-soft); color: var(--text); font-weight: 700;
+  box-shadow: inset 0 -2px 0 0 var(--accent); }
+
+/* Typography — larger, more readable */
+h1 { font-size: 30px; margin: 18px 0 12px; line-height: 1.2; }
+h2 { font-size: 21px; margin: 16px 0 8px; color: var(--text); font-weight: 600; }
+body, input, select, textarea, button { font-size: 17px; }
+.muted { color: var(--muted); font-size: 15px; }
+
+/* Grids and cards */
+.grid { display: grid; gap: 14px; }
+.grid.cols4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.grid.cols3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+
+/* KPI cards */
+.kpi { font-size: 36px; font-weight: 700; margin-top: 6px; line-height: 1.1; }
+.kpi small { font-size: 14px; color: var(--muted); font-weight: 400; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th { text-align: right; color: var(--muted); font-weight: 500; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+td { padding: 10px; border-bottom: 1px solid var(--border); }
+
+/* Inputs and buttons */
+input, select, textarea { font: inherit; background: var(--panel2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+button { font: inherit; cursor: pointer; background: var(--accent); border: none; color: var(--text);
+  border-radius: 8px; padding: 10px 18px; font-weight: 600; }
+button.ghost { background: var(--panel2); color: var(--text); }
 button.lg-green { background: var(--green); color: #052e1c; }
 button.lg-yellow { background: var(--yellow); color: #3a2a00; }
 button.lg-red { background: var(--red); color: #3d0505; }
 button.lg-sel { outline: 2px solid var(--text); }
-.light { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
+
+/* Status lights */
+.light { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
 .light.green { background: var(--green); } .light.yellow { background: var(--yellow); } .light.red { background: var(--red); }
 .light.none { background: var(--border); }
+
+/* Kanban */
 .kanban { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
-.kanban .col { min-width: 230px; flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; }
-.kanban .col h3 { font-size: 13px; margin: 0 0 8px; color: var(--muted); }
-.tcard { background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 8px; font-size: 13px; }
-.tcard .row { display: flex; gap: 8px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
-.chip { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); }
-.badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+.kanban .col { min-width: 240px; flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.kanban .col h3 { font-size: 15px; margin: 0 0 10px; color: var(--muted); }
+.tcard { background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; font-size: 15px; }
+.tcard .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.chip { font-size: 13px; padding: 3px 10px; border-radius: 99px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); }
+.badge { font-size: 13px; padding: 3px 10px; border-radius: 99px; font-weight: 600; }
 .badge.high { background: var(--red); color: #3d0505; }
 .badge.med { background: var(--yellow); color: #3a2a00; }
 .badge.low { background: var(--green); color: #052e1c; }
+
+/* Forms */
 form.inline { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* InfoTip — accessible tooltip for non-obvious terms */
+.infotip { position: relative; display: inline-flex; align-items: center; margin-inline-start: 6px;
+  color: var(--muted); font-size: 15px; cursor: help; }
+.infotip .infotip-text { display: none; position: absolute; bottom: calc(100% + 8px); inset-inline-start: -8px;
+  width: 260px; background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+  font-size: 14px; line-height: 1.5; padding: 10px 12px; border-radius: 10px; z-index: 20;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); font-weight: 400; }
+.infotip:hover .infotip-text, .infotip:focus .infotip-text { display: block; }
+
+/* Skeleton loading state */
+.skeleton { background: linear-gradient(90deg, var(--panel) 25%, var(--panel2) 50%, var(--panel) 75%);
+  background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 10px; height: 80px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Pelago map */
 iframe.pelago { width: 100%; min-height: 480px; border: 1px solid var(--border); border-radius: 12px; background: #060913; }
-@media (max-width: 700px) { .topnav { padding: 8px 10px; gap: 8px; } main { padding: 14px 10px 60px; } }
+
+@media (max-width: 700px) {
+  .topnav { padding: 8px 10px; gap: 8px; }
+  main { padding: 16px 10px 60px; }
+  h1 { font-size: 24px; }
+  .kpi { font-size: 28px; }
+}
